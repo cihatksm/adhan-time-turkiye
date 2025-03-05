@@ -1,34 +1,35 @@
 {
   "name": "prayer-times-turkey",
-  "version": "0.1.10",
-  "description": "It is a module that includes religious information such as prayer times, iftar and imsak in all provinces in Turkey.",
+  "version": "0.1.11",
+  "description": "It is a module that includes religious information such as prayer times, iftar and imsak in all provinces in Turkiye.",
   "main": "prayer.js",
   "scripts": {
-    "dev": "nodemon simple.js"
+    "dev": "nodemon simple.js",
+    "update": "update-modules"
   },
   "author": "CihatKsm <me@cihatksm.com>",
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CihatKsm/prayer-times-turkey.git"
+    "url": "git+https://github.com/cihatksm/prayer-times-turkey.git"
   },
   "keywords": [
     "cihatksm",
     "iftar",
-    "turkey",
     "türkiye",
     "ramazan",
     "ramadan",
     "prayer",
-    "prayer-times"
+    "prayer-times",
+    "prayer-times-turkey"
   ],
   "dependencies": {
-    "axios": "^1.3.6",
-    "cheerio": "^1.0.0-rc.12",
+    "cheerio": "^1.0.0",
     "events": "^3.3.0",
-    "moment-hijri": "^2.1.2"
+    "moment-hijri": "^3.0.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "nodemon": "^3.1.9",
+    "update-modules": "^0.1.8"
   }
 }

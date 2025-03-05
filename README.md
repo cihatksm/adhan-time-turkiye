@@ -45,5 +45,9 @@ setTimeout(async () => {
 
 **E-posta:** me@cihatksm.com adresinden bana ulaşın.
 <small>
+Kaynaklar: "namazvakitleri.diyanet.gov.tr", "vakitci.com"
+</small>
+
+<small>
 Herhangi bir sorun teşkil ediyorsa, problem oluşturuyorsa ya da oluşturduysa önce tarafıma bilgi verilmesi rica olunur.
 </small>
