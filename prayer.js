@@ -1,3 +1,8 @@
 const api = require('./api');
 
-module.exports.times = async (datas) => await api(datas);
+/**
+ * 
+ * @param {Object} data Searching data. Example "{ place: 'Kocaeli' }", "{ plate: 41 }"
+ * @returns {Promise<Object>}
+ */
+module.exports.times = async (data) => await api(data);
