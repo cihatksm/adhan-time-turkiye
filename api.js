@@ -1,38 +1,28 @@
 const cheerio = require('cheerio');
 const hijriCalendar = require('./hijriCalendar');
 
-module.exports = async (data) => {
-    const places = require('./places');
-    if (!data?.place && !data?.plate) return null;
-    if (data?.place && data?.plate) return null;
-
-    const place = places.find(f => f.plate == data?.plate) || places.find(f => String(f?.name)?.toLowerCase() == String(data?.place)?.toLowerCase());
-    if (!place) return null;
-
-    return await firstGettingMethod(place) || await secondGettingMethod(place) || null;
-}
-
 const minute = (x) => x.split(':').map(m => Number(m)).reduce((a, b) => a * 60 + b);
 const rtc = (x) => x < 0 ? true : (Math.floor(x / 60) > 0 ? Math.floor(x / 60) + ' saat ' : '') + x % 60 + ' dakika kaldı.';
 
-function iftarTime(imsak, aksam) {
-    const iftarStatus = minute(now()) > minute(imsak) ? rtc(minute(aksam) - minute(now())) : true;
+function IftarTime(imsak, aksam) {
+    const iftarStatus = minute(Now()) > minute(imsak) ? rtc(minute(aksam) - minute(Now())) : true;
     return iftarStatus ? iftarStatus : true;
 }
 
-function sahurTime(imsak, aksam) {
-    const sahurStatus = minute(now()) > minute(aksam) || minute(now()) < minute(imsak) ?
-        minute(imsak) - minute(now()) > 0 ? rtc(minute(imsak) - minute(now())) :
-            rtc(((24 * 60) - minute(now())) + minute(imsak)) : false;
+function SahurTime(imsak, aksam) {
+    const sahurStatus = minute(Now()) > minute(aksam) || minute(Now()) < minute(imsak) ?
+        minute(imsak) - minute(Now()) > 0 ? rtc(minute(imsak) - minute(Now())) :
+            rtc(((24 * 60) - minute(Now())) + minute(imsak)) : false;
     return sahurStatus ? sahurStatus : false;
 }
 
-function now() {
+function Now() {
     const formatter = new Intl.DateTimeFormat("tr", { dateStyle: "short", timeStyle: "medium", timeZone: 'Europe/Istanbul' });
     return formatter.format(new Date()).split(' ')[1].split(':').slice(0, 2).join(':');
 }
 
-function randomHeader() {
+
+function RandomHeader() {
     const randomUserAgents = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36",
@@ -75,9 +65,8 @@ function randomHeader() {
     return headers;
 }
 
-
 async function firstGettingMethod(place) {
-    const headers = randomHeader()
+    const headers = RandomHeader()
     const response = await fetch(`https://namazvakitleri.diyanet.gov.tr/tr-TR/${place?.code}/`, { headers }).then(data => data.text()).catch(() => null);
 
     if (!response) return null;
@@ -112,15 +101,15 @@ async function firstGettingMethod(place) {
     };
 
     if (hijriCalendar.month == 'Ramazan') {
-        prayerData.remainingTimes.push({ name: 'İftar', time: iftarTime(fajrTime, maghribTime) })
-        prayerData.remainingTimes.push({ name: 'Sahur', time: sahurTime(fajrTime, maghribTime) })
+        prayerData.remainingTimes.push({ name: 'İftar', time: IftarTime(fajrTime, maghribTime) })
+        prayerData.remainingTimes.push({ name: 'Sahur', time: SahurTime(fajrTime, maghribTime) })
     }
 
     return prayerData;
 }
 
 async function secondGettingMethod(place) {
-    const headers = randomHeader()
+    const headers = RandomHeader()
     const response = await fetch(`https://vakitci.com/turkiye/${place?._name}/`, { headers }).then(data => data.text()).catch(() => null);
 
     if (!response) return null;
@@ -155,9 +144,21 @@ async function secondGettingMethod(place) {
     };
 
     if (hijriCalendar.month == 'Ramazan') {
-        prayerData.remainingTimes.push({ name: 'İftar', time: iftarTime(fajrTime, maghribTime) })
-        prayerData.remainingTimes.push({ name: 'Sahur', time: sahurTime(fajrTime, maghribTime) })
+        prayerData.remainingTimes.push({ name: 'İftar', time: IftarTime(fajrTime, maghribTime) })
+        prayerData.remainingTimes.push({ name: 'Sahur', time: SahurTime(fajrTime, maghribTime) })
     }
 
     return prayerData;
+}
+
+
+module.exports = async (data) => {
+    const places = require('./places');
+    if (!data?.place && !data?.plate) return null;
+    if (data?.place && data?.plate) return null;
+
+    const place = places.find(f => f.plate == data?.plate) || places.find(f => String(f?.name)?.toLowerCase() == String(data?.place)?.toLowerCase());
+    if (!place) return null;
+
+    return await firstGettingMethod(place) || await secondGettingMethod(place) || null;
 }
