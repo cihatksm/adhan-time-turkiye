@@ -1,6 +1,6 @@
 {
   "name": "prayer-times-turkey",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "It is a module that includes religious information such as prayer times, iftar and imsak in all provinces in Turkiye.",
   "main": "prayer.js",
   "scripts": {
