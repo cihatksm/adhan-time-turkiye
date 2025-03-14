@@ -67,7 +67,29 @@ function RandomHeader() {
 
 async function firstGettingMethod(place) {
     const headers = RandomHeader()
-    const response = await fetch(`https://namazvakitleri.diyanet.gov.tr/tr-TR/${place?.code}/`, { headers }).then(data => data.text()).catch(() => null);
+    const protocols = ["http", "https"];
+    const randomProtocol = protocols[Math.floor(Math.random() * protocols.length)];
+    const langs = ["tr-TR", "ar-SA", "en-US", "de-DE", "fr-FR", "ru-RU", "es-ES"];
+    const randomLang = langs[Math.floor(Math.random() * langs.length)];
+
+    const response = await fetch(`${randomProtocol}://namazvakitleri.diyanet.gov.tr/${randomLang}/${place?.code}`, {
+        "credentials": "include",
+        "headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,tr;q=0.7,en;q=0.3",
+            "Upgrade-Insecure-Requests": "1",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "cross-site",
+            "Priority": "u=0, i",
+            "Pragma": "no-cache",
+            "Cache-Control": "no-cache",
+            ...headers
+        },
+        "method": "GET",
+        "mode": "cors"
+    }).then(data => data.text()).catch(() => null);
 
     if (!response) return null;
 
@@ -110,7 +132,24 @@ async function firstGettingMethod(place) {
 
 async function secondGettingMethod(place) {
     const headers = RandomHeader()
-    const response = await fetch(`https://vakitci.com/turkiye/${place?._name}/`, { headers }).then(data => data.text()).catch(() => null);
+    const response = await fetch(`https://vakitci.com/turkiye/${place?._name}/`, {
+        "credentials": "include",
+        "headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,tr;q=0.7,en;q=0.3",
+            "Upgrade-Insecure-Requests": "1",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "cross-site",
+            "Priority": "u=0, i",
+            "Pragma": "no-cache",
+            "Cache-Control": "no-cache",
+            ...headers
+        },
+        "method": "GET",
+        "mode": "cors"
+    }).then(data => data.text()).catch(() => null);
 
     if (!response) return null;
 
@@ -160,5 +199,25 @@ module.exports = async (data) => {
     const place = places.find(f => f.plate == data?.plate) || places.find(f => String(f?.name)?.toLowerCase() == String(data?.place)?.toLowerCase());
     if (!place) return null;
 
-    return await firstGettingMethod(place) || await secondGettingMethod(place) || null;
+    const first = async () => await firstGettingMethod(place);
+    const second = async () => await secondGettingMethod(place);
+
+    var output_data = null;
+    {
+        const first_data = await first();
+        const is_there_name = first_data?.place?.name?.length > 0;
+        const is_there_times = first_data?.times?.filter(f => f.time.length > 0).length == first_data?.times?.length;
+        if (first_data && is_there_name && is_there_times) output_data = first_data;
+    }
+
+    if (output_data) return output_data;
+
+    {
+        const second_data = await second();
+        const is_there_name = second_data?.place?.name?.length > 0;
+        const is_there_times = second_data?.times?.filter(f => f.time.length > 0).length == second_data?.times?.length;
+        if (second_data && is_there_name && is_there_times) output_data = second_data;
+    }
+
+    return output_data;
 }
