@@ -89,8 +89,6 @@ async function localGettingMethod(place) {
         data_source: 'local_database'
     };
 
-    console.log(prayerData);
-
     if (hijriCalendar.month == 'Ramazan') {
         prayerData.remainingTimes.push({ name: 'İftar', time: IftarTime(dateData.fajr, dateData.maghrib) })
         prayerData.remainingTimes.push({ name: 'Sahur', time: SahurTime(dateData.fajr, dateData.maghrib) })
