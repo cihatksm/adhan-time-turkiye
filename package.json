@@ -1,6 +1,6 @@
 {
   "name": "adhan-time-turkiye",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "It is a module that includes religious information such as prayer times, iftar and imsak in all provinces in Turkiye.",
   "main": "prayer.js",
   "scripts": {
