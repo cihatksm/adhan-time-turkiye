@@ -1,12 +1,12 @@
 #### Modül İndirme:
 
 ```bash
-  npm install prayer-times-turkey
+  npm install prayer-times-turkiye
 ```
 
 #### Örnek Kullanım:
 ```js
-const prayer = require('prayer-times-turkey')
+const prayer = require('prayer-times-turkiye')
 const date = () => new Date()
 
 console.log(date(), 'System opened!')
