@@ -44,10 +44,11 @@ setTimeout(async () => {
 #### Geri Bildirim
 
 **E-posta:** me@cihatksm.com adresinden bana ulaşın.
+<br>
 <small>
 Kaynaklar: "namazvakitleri.diyanet.gov.tr", "vakitci.com"
 </small>
-
+<br>
 <small>
 Herhangi bir sorun teşkil ediyorsa, problem oluşturuyorsa ya da oluşturduysa önce tarafıma bilgi verilmesi rica olunur.
 </small>
