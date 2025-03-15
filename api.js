@@ -65,6 +65,40 @@ function RandomHeader() {
     return headers;
 }
 
+async function localGettingMethod(place) {
+    file = null;
+    try { file = require('./data/' + place._name + '.json') } catch (e) { }
+
+    if (!file) return null;
+
+    const dateData = file?.find(f => f.dateMiladiShort == new Date().toLocaleDateString("tr-TR").replaceAll('.', '/'));
+    if (!dateData) return null;
+
+    let prayerData = {
+        place: { name: place.name, plate: place.plate },
+        hijriCalendar: hijriCalendar.date,
+        times: [
+            { name: 'İmsak', time: dateData.fajr },
+            { name: 'Güneş', time: dateData.sunrise },
+            { name: 'Öğle', time: dateData.dhuhr },
+            { name: 'İkindi', time: dateData.asr },
+            { name: 'Akşam', time: dateData.maghrib },
+            { name: 'Yatsı', time: dateData.isha },
+        ],
+        remainingTimes: [],
+        data_source: 'local_database'
+    };
+
+    console.log(prayerData);
+
+    if (hijriCalendar.month == 'Ramazan') {
+        prayerData.remainingTimes.push({ name: 'İftar', time: IftarTime(dateData.fajr, dateData.maghrib) })
+        prayerData.remainingTimes.push({ name: 'Sahur', time: SahurTime(dateData.fajr, dateData.maghrib) })
+    }
+
+    return prayerData;
+}
+
 async function firstGettingMethod(place) {
     const headers = RandomHeader()
     const protocols = ["http", "https"];
@@ -190,7 +224,6 @@ async function secondGettingMethod(place) {
     return prayerData;
 }
 
-
 module.exports = async (data) => {
     const places = require('./places');
     if (!data?.place && !data?.plate) return null;
@@ -199,10 +232,21 @@ module.exports = async (data) => {
     const place = places.find(f => f.plate == data?.plate) || places.find(f => String(f?.name)?.toLowerCase() == String(data?.place)?.toLowerCase());
     if (!place) return null;
 
+    const local = async () => await localGettingMethod(place);
     const first = async () => await firstGettingMethod(place);
     const second = async () => await secondGettingMethod(place);
 
     var output_data = null;
+
+    {
+        const local_data = await local();
+        const is_there_name = local_data?.place?.name?.length > 0;
+        const is_there_times = local_data?.times?.filter(f => f.time.length > 0).length == local_data?.times?.length;
+        if (local_data && is_there_name && is_there_times) output_data = local_data;
+    }
+
+    if (output_data) return output_data;
+
     {
         const first_data = await first();
         const is_there_name = first_data?.place?.name?.length > 0;
