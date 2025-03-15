@@ -1,5 +1,5 @@
 {
-  "name": "adhan-time-turkey",
+  "name": "adhan-time-turkiye",
   "version": "2.0.0",
   "description": "It is a module that includes religious information such as prayer times, iftar and imsak in all provinces in Turkiye.",
   "main": "prayer.js",
@@ -11,7 +11,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cihatksm/adhan-time-turkey.git"
+    "url": "git+https://github.com/cihatksm/adhan-time-turkiye.git"
   },
   "keywords": [
     "cihatksm",
@@ -21,7 +21,7 @@
     "ramadan",
     "prayer",
     "prayer-times",
-    "adhan-time-turkey"
+    "adhan-time-turkiye"
   ],
   "dependencies": {
     "cheerio": "^1.0.0",

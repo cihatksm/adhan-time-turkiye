@@ -1,12 +1,12 @@
 #### Modül İndirme:
 
 ```bash
-  npm install adhan-time-turkey
+  npm install adhan-time-turkiye
 ```
 
 #### Örnek Kullanım:
 ```js
-const prayer = require('adhan-time-turkey')
+const prayer = require('adhan-time-turkiye')
 const date = () => new Date()
 
 console.log(date(), 'System opened!')
