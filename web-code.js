@@ -48,7 +48,7 @@
         for (let value of replaces) filename = filename.replaceAll(value[0], value[1]);
         filename = filename.toLowerCase();
 
-        let jsonStr = JSON.stringify(data, null, 2);
+        let jsonStr = JSON.stringify(data);
         let blob = new Blob([jsonStr], { type: "application/json" });
         let link = document.createElement("a");
         link.href = URL.createObjectURL(blob);

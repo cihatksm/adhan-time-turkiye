@@ -1,3 +1,4 @@
+const places = require('./places');
 const cheerio = require('cheerio');
 const hijriCalendar = require('./hijriCalendar');
 
@@ -20,7 +21,6 @@ function Now() {
     const formatter = new Intl.DateTimeFormat("tr", { dateStyle: "short", timeStyle: "medium", timeZone: 'Europe/Istanbul' });
     return formatter.format(new Date()).split(' ')[1].split(':').slice(0, 2).join(':');
 }
-
 
 function RandomHeader() {
     const randomUserAgents = [
@@ -66,12 +66,27 @@ function RandomHeader() {
 }
 
 async function localGettingMethod(place) {
-    file = null;
-    try { file = require('./data/' + place._name + '.json') } catch (e) { }
+    const headers = RandomHeader()
+    const response = await fetch(`https://raw.githubusercontent.com/cihatksm/adhan-time-turkiye/refs/heads/main/data/${place._name}.json`, {
+        "credentials": "include",
+        "headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,tr;q=0.7,en;q=0.3",
+            "Upgrade-Insecure-Requests": "1",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "cross-site",
+            "Priority": "u=0, i",
+            "Pragma": "no-cache",
+            "Cache-Control": "no-cache",
+            ...headers
+        },
+        "method": "GET",
+        "mode": "cors"
+    }).then(data => data.json()).catch(() => null);
 
-    if (!file) return null;
-
-    const dateData = file?.find(f => f.dateMiladiShort == new Date().toLocaleDateString("tr-TR").replaceAll('.', '/'));
+    const dateData = response?.find(f => f.dateMiladiShort == new Date().toLocaleDateString("tr-TR").replaceAll('.', '/'));
     if (!dateData) return null;
 
     let prayerData = {
@@ -86,7 +101,7 @@ async function localGettingMethod(place) {
             { name: 'Yatsı', time: dateData.isha },
         ],
         remainingTimes: [],
-        data_source: 'local_database'
+        data_source: 'project_database'
     };
 
     if (hijriCalendar.month == 'Ramazan') {
@@ -223,7 +238,6 @@ async function secondGettingMethod(place) {
 }
 
 module.exports = async (data) => {
-    const places = require('./places');
     if (!data?.place && !data?.plate) return null;
     if (data?.place && data?.plate) return null;
 
@@ -234,32 +248,18 @@ module.exports = async (data) => {
     const first = async () => await firstGettingMethod(place);
     const second = async () => await secondGettingMethod(place);
 
-    var output_data = null;
+    const local_data = await local();
+    const is_there_name = local_data?.place?.name?.length > 0;
+    const is_there_times = local_data?.times?.filter(f => f.time.length > 0).length == local_data?.times?.length;
+    if (local_data && is_there_name && is_there_times) return local_data;
 
-    {
-        const local_data = await local();
-        const is_there_name = local_data?.place?.name?.length > 0;
-        const is_there_times = local_data?.times?.filter(f => f.time.length > 0).length == local_data?.times?.length;
-        if (local_data && is_there_name && is_there_times) output_data = local_data;
-    }
+    const first_data = await first();
+    const is_first_there_name = first_data?.place?.name?.length > 0;
+    const is_first_there_times = first_data?.times?.filter(f => f.time.length > 0).length == first_data?.times?.length;
+    if (first_data && is_first_there_name && is_first_there_times) return first_data;
 
-    if (output_data) return output_data;
-
-    {
-        const first_data = await first();
-        const is_there_name = first_data?.place?.name?.length > 0;
-        const is_there_times = first_data?.times?.filter(f => f.time.length > 0).length == first_data?.times?.length;
-        if (first_data && is_there_name && is_there_times) output_data = first_data;
-    }
-
-    if (output_data) return output_data;
-
-    {
-        const second_data = await second();
-        const is_there_name = second_data?.place?.name?.length > 0;
-        const is_there_times = second_data?.times?.filter(f => f.time.length > 0).length == second_data?.times?.length;
-        if (second_data && is_there_name && is_there_times) output_data = second_data;
-    }
-
-    return output_data;
+    const second_data = await second();
+    const is_second_there_name = second_data?.place?.name?.length > 0;
+    const is_second_there_times = second_data?.times?.filter(f => f.time.length > 0).length == second_data?.times?.length;
+    if (second_data && is_second_there_name && is_second_there_times) return second_data;
 }
