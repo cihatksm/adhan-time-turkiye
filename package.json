@@ -1,13 +1,13 @@
 {
   "name": "adhan-time-turkiye",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "It is a module that includes religious information such as prayer times, iftar and imsak in all provinces in Turkiye.",
   "main": "prayer.js",
   "scripts": {
-    "dev": "nodemon simple.js",
+    "developer": "nodemon simple.js",
     "update": "update-modules"
   },
-  "author": "cihatksm <me@cihatksm.com>",
+  "author": "cihatksm",
   "license": "MIT",
   "repository": {
     "type": "git",

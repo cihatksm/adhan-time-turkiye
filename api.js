@@ -1,3 +1,4 @@
+const package = require('./package.json');
 const places = require('./places');
 const cheerio = require('cheerio');
 const hijriCalendar = require('./hijriCalendar');
@@ -67,7 +68,7 @@ function RandomHeader() {
 
 async function localGettingMethod(place) {
     const headers = RandomHeader()
-    const response = await fetch(`https://raw.githubusercontent.com/cihatksm/adhan-time-turkiye/refs/heads/main/data/${place._name}.json`, {
+    const response = await fetch(`https://raw.githubusercontent.com/${package.author}/${package.name}/refs/heads/main/data/${place._name}.json`, {
         "credentials": "include",
         "headers": {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0",
@@ -86,12 +87,13 @@ async function localGettingMethod(place) {
         "mode": "cors"
     }).then(data => data.json()).catch(() => null);
 
-    const dateData = response?.find(f => f.dateMiladiShort == new Date().toLocaleDateString("tr-TR").replaceAll('.', '/'));
+    const nowDate = new Date().toLocaleDateString('tr-TR', { timeZone: 'Europe/Istanbul' }).replaceAll('.', '/');
+    const dateData = response?.find(f => f.dateMiladiShort == nowDate);
     if (!dateData) return null;
 
     let prayerData = {
         place: { name: place.name, plate: place.plate },
-        hijriCalendar: hijriCalendar.date,
+        hijriCalendar: hijriCalendar().date,
         times: [
             { name: 'İmsak', time: dateData.fajr },
             { name: 'Güneş', time: dateData.sunrise },
@@ -156,7 +158,7 @@ async function firstGettingMethod(place) {
 
     let prayerData = {
         place: { name: place.name, plate: place.plate },
-        hijriCalendar: hijriCalendar.date,
+        hijriCalendar: hijriCalendar().date,
         times: [
             { name: 'İmsak', time: fajrTime },
             { name: 'Güneş', time: sunriseTime },
@@ -216,7 +218,7 @@ async function secondGettingMethod(place) {
 
     let prayerData = {
         place: { name: place.name, plate: place.plate },
-        hijriCalendar: hijriCalendar.date,
+        hijriCalendar: hijriCalendar().date,
         times: [
             { name: 'İmsak', time: fajrTime },
             { name: 'Güneş', time: sunriseTime },

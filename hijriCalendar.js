@@ -16,11 +16,17 @@ const months = [
   { number: '12', name: 'Zilhicce' },
 ]
 
-const day = moment().locale('tr').format('iDD');
-const month = months.find(f => f.number == moment().locale('tr').format('iM')).name;
-const year = moment().locale('tr').format('iYYYY');
+/**
+ * 
+ * @returns {date: string, day: number, month: string, year: number}
+ */
+module.exports = () => {
+  const day = moment().locale('tr').format('iDD');
+  const month = months.find(f => f.number == moment().locale('tr').format('iM')).name;
+  const year = moment().locale('tr').format('iYYYY');
 
-module.exports = {
-  date: `${day} ${month} ${year}`,
-  day, month, year
+  return {
+    date: `${day} ${month} ${year}`,
+    day, month, year
+  }
 }
